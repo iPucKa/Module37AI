@@ -84,4 +84,9 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack
 	{
 		public ReactiveVariable<bool> Value;
 	}
+
+	public class IsAttackKeyPressed : IEntityComponent
+	{
+		public ReactiveVariable<bool> Value;
+	}
 }

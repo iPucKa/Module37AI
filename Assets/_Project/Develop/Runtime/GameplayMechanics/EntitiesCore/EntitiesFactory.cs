@@ -136,7 +136,8 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore
 				.AddAttackCanceledEvent()
 				.AddAttackCooldownInitialTime(new ReactiveVariable<float>(config.AttackCooldown))
 				.AddAttackCooldownCurrentTime()
-				.AddInAttackCooldown();
+				.AddInAttackCooldown()
+				.AddIsAttackKeyPressed(new ReactiveVariable<bool>());
 
 
 			ICompositCondition canMove = new CompositCondition()

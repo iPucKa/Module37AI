@@ -1,6 +1,5 @@
 ﻿using Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore;
 using Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI.States;
-using Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack;
 using Assets._Project.Develop.Runtime.GameplayMechanics.Features.InputFeature;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Utilities.Conditions;
@@ -9,7 +8,6 @@ using Assets._Project.Develop.Runtime.Utilities.Timer;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI
 {
@@ -19,7 +17,6 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI
 		private readonly TimerServiceFactory _timerServiceFactory;
 		private readonly AIBrainsContext _brainsContext;
 		private readonly IInputService _inputService;
-		private readonly MouseHandler _mouseInputService;
 		private readonly EntitiesLifeContext _entitiesLifeContext;
 
 		public BrainsFactory(DIContainer container)
@@ -28,14 +25,31 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI
 			_timerServiceFactory = _container.Resolve<TimerServiceFactory>();
 			_brainsContext = _container.Resolve<AIBrainsContext>();
 			_inputService = _container.Resolve<IInputService>();
-			_mouseInputService = _container.Resolve<MouseHandler>();
 			_entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
 		}
 
 		public StateMachineBrain CreateSimpleHeroBrain(Entity entity, Camera camera)
 		{
-			AIStateMachine stateMachine = CreatePlayerMovementStateMachine(entity, camera);
-			StateMachineBrain brain = new StateMachineBrain(stateMachine);
+			AIStateMachine combatState = CreatePlayerAttackStateMachine(entity, camera);
+
+			PlayerInputMovementState movementState = new PlayerInputMovementState(entity, _inputService);			
+
+			ICompositCondition fromMovementToCombatStateCondition = new CompositCondition()
+				.Add(entity.CanStartAttack)
+				.Add(new FuncCondition(() => _inputService.Direction == Vector3.zero));
+
+			ICompositCondition fromCombatToMovemenStateCondition = new CompositCondition()
+				.Add(entity.CanMove)
+				.Add(new FuncCondition(() => _inputService.Direction != Vector3.zero));
+
+			AIStateMachine behaviour = new AIStateMachine();
+			behaviour.AddState(combatState);
+			behaviour.AddState(movementState);
+
+			behaviour.AddTransition(combatState, movementState, fromCombatToMovemenStateCondition);
+			behaviour.AddTransition(movementState, combatState, fromMovementToCombatStateCondition);
+
+			StateMachineBrain brain = new StateMachineBrain(behaviour);
 
 			_brainsContext.SetFor(entity, brain);
 
@@ -166,70 +180,31 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI
 			return rootStateMachine;
 		}
 
-		private AIStateMachine CreatePlayerMovementStateMachine(Entity entity, Camera camera)
+		private AIStateMachine CreatePlayerAttackStateMachine(Entity entity, Camera camera)
 		{
-			PlayerInputMovementState movementState = new PlayerInputMovementState(entity, _inputService);
+			MouseRotationState mouseRotationState = new MouseRotationState(entity, camera);
 
-			MouseRotationState mouseRotationState = new MouseRotationState(entity, _mouseInputService, camera);
-
-			//добавляем условия для переходов состояний
-			ICompositCondition fromMovementToMouseRotationStateCondition = new CompositCondition()
-				.Add(entity.CanRotate)
-				.Add(new FuncCondition(() => _inputService.Direction == Vector3.zero));
-			
-			ICompositCondition fromMouseRotationToMovemenStateCondition = new CompositCondition()
-				.Add(entity.CanMove)
-				.Add(new FuncCondition(() => _inputService.Direction != Vector3.zero));
-
-
-			AIStateMachine stateMachine = new AIStateMachine();
-			//добавляем Состояния
-			stateMachine.AddState(movementState);
-			stateMachine.AddState(mouseRotationState);
-
-			//добавляем Переходы
-			stateMachine.AddTransition(movementState, mouseRotationState, fromMovementToMouseRotationStateCondition);
-			stateMachine.AddTransition(mouseRotationState, movementState, fromMouseRotationToMovemenStateCondition);	
-
-			return stateMachine;
-		}
-
-		private AIStateMachine CreateAutoAttackStateMachine(Entity entity)
-		{
-			RotateToTargetState rotateToTargetState = new RotateToTargetState(entity);
-
-			AttackTriggerState attackTriggerState = new AttackTriggerState(entity);
-
-			ICondition canAttack = entity.CanStartAttack;
-			Transform transform = entity.Transform;
-			ReactiveVariable<Entity> currentTarget = entity.CurrentTarget;
-
-			ICompositCondition fromRotateToAttackCondition = new CompositCondition()
-				.Add(canAttack)
-				.Add(new FuncCondition(() =>
-				{
-					Entity target = currentTarget.Value;
-
-					if (target == null)
-						return false;
-
-					float angleToTarget = Quaternion.Angle(transform.rotation, Quaternion.LookRotation(target.Transform.position - transform.position));
-					return angleToTarget < 1f;
-				}));
+			AttackByKeyState attackTriggerState = new AttackByKeyState(entity);
 
 			ReactiveVariable<bool> inAttackProcess = entity.InAttackProcess;
 
-			ICondition fromAttackToRotateStateCondition = new FuncCondition(() => inAttackProcess.Value == false);
+			ICompositCondition fromAttackToMouseRotationStateCondition = new CompositCondition()
+				.Add(entity.CanRotate)
+				.Add(new FuncCondition(() => inAttackProcess.Value == false));
+			
+			ICompositCondition fromMouseRotationToAttackStateCondition = new CompositCondition()
+				.Add(entity.CanStartAttack)
+				.Add(new FuncCondition(() => entity.IsAttackKeyPressed.Value == true));
 
 			AIStateMachine stateMachine = new AIStateMachine();
 
-			stateMachine.AddState(rotateToTargetState);
 			stateMachine.AddState(attackTriggerState);
+			stateMachine.AddState(mouseRotationState);
 
-			stateMachine.AddTransition(rotateToTargetState, attackTriggerState, fromRotateToAttackCondition);
-			stateMachine.AddTransition(attackTriggerState, rotateToTargetState, fromAttackToRotateStateCondition);
+			stateMachine.AddTransition(attackTriggerState, mouseRotationState, fromAttackToMouseRotationStateCondition);
+			stateMachine.AddTransition(mouseRotationState, attackTriggerState, fromMouseRotationToAttackStateCondition);	
 
 			return stateMachine;
-		}
+		}		
 	}
 }

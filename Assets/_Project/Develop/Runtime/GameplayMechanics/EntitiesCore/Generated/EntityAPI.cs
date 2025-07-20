@@ -1314,6 +1314,30 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore
 		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.InAttackCooldown() {Value = value}); 
 		}
 
+		public Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.IsAttackKeyPressed IsAttackKeyPressedC => GetComponent<Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.IsAttackKeyPressed>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> IsAttackKeyPressed => IsAttackKeyPressedC.Value;
+
+		public bool TryGetIsAttackKeyPressed(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.IsAttackKeyPressed component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean>);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Entity AddIsAttackKeyPressed()
+		{
+		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.IsAttackKeyPressed() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean>() }); 
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Entity AddIsAttackKeyPressed(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+		{
+		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.IsAttackKeyPressed() {Value = value}); 
+		}
+
 		public Assets._Project.Develop.Runtime.GameplayMechanics.Features.ApplyDamage.TakeDamageRequest TakeDamageRequestC => GetComponent<Assets._Project.Develop.Runtime.GameplayMechanics.Features.ApplyDamage.TakeDamageRequest>();
 
 		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<System.Single> TakeDamageRequest => TakeDamageRequestC.Value;

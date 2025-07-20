@@ -3,6 +3,7 @@ using Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI;
 using Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI.States;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Assets._Project.Develop.Runtime.GameplayMechanics
 {
@@ -68,8 +69,10 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics
 				_brainsFactory.CreateSimpleHeroBrain(_entityHero, _camera);
 			}
 
-			//if(Input.GetKeyDown(KeyCode.F))
-			//	_entityNewHero.TakeDamageRequest.Invoke(50);
+			if (Input.GetMouseButtonDown(0))
+			{
+				_entityHero.IsAttackKeyPressed.Value = true;
+			}
 		}
 	}
 }

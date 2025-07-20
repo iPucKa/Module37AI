@@ -21,13 +21,6 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Infrastructure
 			container.RegisterAsSingle(CreateBrainsFactory);
 			container.RegisterAsSingle(CreateAIBrainsContext);
 			container.RegisterAsSingle<IInputService>(CreateDesktopInput);
-			container.RegisterAsSingle(CreateMouseInputService);
-		}
-
-		//Способ создания сервиса воода с мыши
-		private static MouseHandler CreateMouseInputService(DIContainer c)
-		{
-			return new MouseHandler();
 		}
 
 		//Способ создания сервиса воода с клавиатуры
