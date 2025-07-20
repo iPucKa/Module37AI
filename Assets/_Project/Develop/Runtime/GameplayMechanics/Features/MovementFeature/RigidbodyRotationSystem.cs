@@ -8,8 +8,6 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.MovementFea
 {
 	public class RigidbodyRotationSystem : IInitializableSystem, IUpdatableSystem
 	{
-		private const float _deadZone = 0.1f;
-
 		private ReactiveVariable<Vector3> _direction;
 		private ReactiveVariable<float> _rotationSpeed;
 		private Rigidbody _rigidbody;

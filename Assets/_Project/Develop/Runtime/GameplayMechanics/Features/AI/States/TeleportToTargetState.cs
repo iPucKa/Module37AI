@@ -51,7 +51,7 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI.States
 		{
 			Vector3 direction = (_currentTarget.Value.Transform.position - _transform.position).normalized;
 
-			Vector3 newPosition = direction * _teleportRadius.Value;
+			Vector3 newPosition = _transform.position + direction * _teleportRadius.Value;
 
 			_teleportPosition.Value = newPosition;
 		}

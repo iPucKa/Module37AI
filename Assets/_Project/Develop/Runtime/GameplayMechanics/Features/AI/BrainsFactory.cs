@@ -19,6 +19,7 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI
 		private readonly TimerServiceFactory _timerServiceFactory;
 		private readonly AIBrainsContext _brainsContext;
 		private readonly IInputService _inputService;
+		private readonly MouseHandler _mouseInputService;
 		private readonly EntitiesLifeContext _entitiesLifeContext;
 
 		public BrainsFactory(DIContainer container)
@@ -27,7 +28,18 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI
 			_timerServiceFactory = _container.Resolve<TimerServiceFactory>();
 			_brainsContext = _container.Resolve<AIBrainsContext>();
 			_inputService = _container.Resolve<IInputService>();
+			_mouseInputService = _container.Resolve<MouseHandler>();
 			_entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
+		}
+
+		public StateMachineBrain CreateSimpleHeroBrain(Entity entity, Camera camera)
+		{
+			AIStateMachine stateMachine = CreatePlayerMovementStateMachine(entity, camera);
+			StateMachineBrain brain = new StateMachineBrain(stateMachine);
+
+			_brainsContext.SetFor(entity, brain);
+
+			return brain;
 		}
 
 		public StateMachineBrain CreateMainHeroRandomTeleportingBrain(Entity entity)
@@ -96,15 +108,16 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI
 
 			EmptyState emptyState = new EmptyState();
 
+			ICondition canTeleport = entity.CanTeleport;
+
+			ICompositCondition fromEmptyToTeleportingStateCondition = new CompositCondition()
+				.Add(canTeleport);
+
 			ICompositCondition fromTeleportingToEmptyStateCondition = new CompositCondition(LogicOperations.Or)
+				//.Add(new FuncCondition(() => canTeleport.Evaluate()==false));
 				.Add(new FuncCondition(() => entity.IsDead.Value == true))
 				.Add(new FuncCondition(() => entity.InTeleportCooldown.Value == true))
 				.Add(new FuncCondition(() => entity.CurrentEnergy.Value < entity.TeleportByEnergyValue.Value));
-
-			ICompositCondition fromEmptyToTeleportingStateCondition = new CompositCondition()
-				.Add(new FuncCondition(() => entity.IsDead.Value == false))
-				.Add(new FuncCondition(() => entity.InTeleportCooldown.Value == false))
-				.Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.TeleportByEnergyValue.Value));
 
 			AIStateMachine stateMachine = new AIStateMachine();
 
@@ -123,17 +136,18 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI
 
 			EmptyState emptyState = new EmptyState();
 
-			ICompositCondition fromTeleportingToEmptyStateCondition = new CompositCondition(LogicOperations.Or)
-				.Add(new FuncCondition(() => entity.IsDead.Value == true))
-				.Add(new FuncCondition(() => entity.InTeleportCooldown.Value == true))
-				.Add(new FuncCondition(() => entity.CurrentEnergy.Value < entity.TeleportByEnergyValue.Value));
+			ICondition canTeleport = entity.CanTeleport;
 
 			float energyEconomyValue = 0.4f * entity.MaxEnergy.Value;
 
 			ICompositCondition fromEmptyToTeleportingStateCondition = new CompositCondition()
-				.Add(new FuncCondition(() => entity.IsDead.Value == false))
-				.Add(new FuncCondition(() => entity.InTeleportCooldown.Value == false))
+				.Add(canTeleport)
 				.Add(new FuncCondition(() => entity.CurrentEnergy.Value >= energyEconomyValue));
+
+			ICompositCondition fromTeleportingToEmptyStateCondition = new CompositCondition(LogicOperations.Or)
+				.Add(new FuncCondition(() => entity.IsDead.Value == true))
+				.Add(new FuncCondition(() => entity.InTeleportCooldown.Value == true))
+				.Add(new FuncCondition(() => entity.CurrentEnergy.Value < energyEconomyValue));
 
 			AIStateMachine stateMachine = new AIStateMachine();
 
@@ -150,6 +164,72 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI
 			rootStateMachine.AddState(parallelState);
 
 			return rootStateMachine;
+		}
+
+		private AIStateMachine CreatePlayerMovementStateMachine(Entity entity, Camera camera)
+		{
+			PlayerInputMovementState movementState = new PlayerInputMovementState(entity, _inputService);
+
+			MouseRotationState mouseRotationState = new MouseRotationState(entity, _mouseInputService, camera);
+
+			//добавляем условия для переходов состояний
+			ICompositCondition fromMovementToMouseRotationStateCondition = new CompositCondition()
+				.Add(entity.CanRotate)
+				.Add(new FuncCondition(() => _inputService.Direction == Vector3.zero));
+			
+			ICompositCondition fromMouseRotationToMovemenStateCondition = new CompositCondition()
+				.Add(entity.CanMove)
+				.Add(new FuncCondition(() => _inputService.Direction != Vector3.zero));
+
+
+			AIStateMachine stateMachine = new AIStateMachine();
+			//добавляем Состояния
+			stateMachine.AddState(movementState);
+			stateMachine.AddState(mouseRotationState);
+
+			//добавляем Переходы
+			stateMachine.AddTransition(movementState, mouseRotationState, fromMovementToMouseRotationStateCondition);
+			stateMachine.AddTransition(mouseRotationState, movementState, fromMouseRotationToMovemenStateCondition);	
+
+			return stateMachine;
+		}
+
+		private AIStateMachine CreateAutoAttackStateMachine(Entity entity)
+		{
+			RotateToTargetState rotateToTargetState = new RotateToTargetState(entity);
+
+			AttackTriggerState attackTriggerState = new AttackTriggerState(entity);
+
+			ICondition canAttack = entity.CanStartAttack;
+			Transform transform = entity.Transform;
+			ReactiveVariable<Entity> currentTarget = entity.CurrentTarget;
+
+			ICompositCondition fromRotateToAttackCondition = new CompositCondition()
+				.Add(canAttack)
+				.Add(new FuncCondition(() =>
+				{
+					Entity target = currentTarget.Value;
+
+					if (target == null)
+						return false;
+
+					float angleToTarget = Quaternion.Angle(transform.rotation, Quaternion.LookRotation(target.Transform.position - transform.position));
+					return angleToTarget < 1f;
+				}));
+
+			ReactiveVariable<bool> inAttackProcess = entity.InAttackProcess;
+
+			ICondition fromAttackToRotateStateCondition = new FuncCondition(() => inAttackProcess.Value == false);
+
+			AIStateMachine stateMachine = new AIStateMachine();
+
+			stateMachine.AddState(rotateToTargetState);
+			stateMachine.AddState(attackTriggerState);
+
+			stateMachine.AddTransition(rotateToTargetState, attackTriggerState, fromRotateToAttackCondition);
+			stateMachine.AddTransition(attackTriggerState, rotateToTargetState, fromAttackToRotateStateCondition);
+
+			return stateMachine;
 		}
 	}
 }

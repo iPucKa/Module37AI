@@ -1,6 +1,7 @@
 ﻿using Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore;
 using Assets._Project.Develop.Runtime.Utilities.Conditions;
 using Assets._Project.Develop.Runtime.Utilities.Reactive;
+using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack
 {
@@ -52,5 +53,35 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack
 	public class InstantAttackDamage : IEntityComponent
 	{
 		public ReactiveVariable<float> Value;
+	}
+
+	public class ShootPoint : IEntityComponent
+	{
+		public Transform Value;
+	}
+
+	public class MustCancelAttack : IEntityComponent
+	{
+		public ICompositCondition Value;
+	}
+
+	public class AttackCanceledEvent : IEntityComponent
+	{
+		public ReactiveEvent Value;
+	}
+
+	public class AttackCooldownInitialTime : IEntityComponent
+	{
+		public ReactiveVariable<float> Value;
+	}
+
+	public class AttackCooldownCurrentTime : IEntityComponent
+	{
+		public ReactiveVariable<float> Value;
+	}
+
+	public class InAttackCooldown : IEntityComponent
+	{
+		public ReactiveVariable<bool> Value;
 	}
 }

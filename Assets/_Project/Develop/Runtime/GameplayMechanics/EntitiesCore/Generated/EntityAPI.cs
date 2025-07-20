@@ -1180,6 +1180,140 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore
 		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.InstantAttackDamage() {Value = value}); 
 		}
 
+		public Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.ShootPoint ShootPointC => GetComponent<Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.ShootPoint>();
+
+		public UnityEngine.Transform ShootPoint => ShootPointC.Value;
+
+		public bool TryGetShootPoint(out UnityEngine.Transform value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.ShootPoint component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(UnityEngine.Transform);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Entity AddShootPoint(UnityEngine.Transform value)
+		{
+		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.ShootPoint() {Value = value}); 
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.MustCancelAttack MustCancelAttackC => GetComponent<Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.MustCancelAttack>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositCondition MustCancelAttack => MustCancelAttackC.Value;
+
+		public bool TryGetMustCancelAttack(out Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositCondition value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.MustCancelAttack component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositCondition);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Entity AddMustCancelAttack(Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositCondition value)
+		{
+		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.MustCancelAttack() {Value = value}); 
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCanceledEvent AttackCanceledEventC => GetComponent<Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCanceledEvent>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent AttackCanceledEvent => AttackCanceledEventC.Value;
+
+		public bool TryGetAttackCanceledEvent(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCanceledEvent component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Entity AddAttackCanceledEvent()
+		{
+		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCanceledEvent() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent() }); 
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Entity AddAttackCanceledEvent(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent value)
+		{
+		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCanceledEvent() {Value = value}); 
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCooldownInitialTime AttackCooldownInitialTimeC => GetComponent<Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCooldownInitialTime>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Single> AttackCooldownInitialTime => AttackCooldownInitialTimeC.Value;
+
+		public bool TryGetAttackCooldownInitialTime(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Single> value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCooldownInitialTime component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Single>);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Entity AddAttackCooldownInitialTime()
+		{
+		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCooldownInitialTime() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Single>() }); 
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Entity AddAttackCooldownInitialTime(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Single> value)
+		{
+		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCooldownInitialTime() {Value = value}); 
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCooldownCurrentTime AttackCooldownCurrentTimeC => GetComponent<Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCooldownCurrentTime>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Single> AttackCooldownCurrentTime => AttackCooldownCurrentTimeC.Value;
+
+		public bool TryGetAttackCooldownCurrentTime(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Single> value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCooldownCurrentTime component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Single>);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Entity AddAttackCooldownCurrentTime()
+		{
+		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCooldownCurrentTime() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Single>() }); 
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Entity AddAttackCooldownCurrentTime(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Single> value)
+		{
+		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.AttackCooldownCurrentTime() {Value = value}); 
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.InAttackCooldown InAttackCooldownC => GetComponent<Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.InAttackCooldown>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> InAttackCooldown => InAttackCooldownC.Value;
+
+		public bool TryGetInAttackCooldown(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.InAttackCooldown component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean>);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Entity AddInAttackCooldown()
+		{
+		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.InAttackCooldown() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean>() }); 
+		}
+
+		public Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Entity AddInAttackCooldown(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+		{
+		return AddComponent(new Assets._Project.Develop.Runtime.GameplayMechanics.Features.Attack.InAttackCooldown() {Value = value}); 
+		}
+
 		public Assets._Project.Develop.Runtime.GameplayMechanics.Features.ApplyDamage.TakeDamageRequest TakeDamageRequestC => GetComponent<Assets._Project.Develop.Runtime.GameplayMechanics.Features.ApplyDamage.TakeDamageRequest>();
 
 		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<System.Single> TakeDamageRequest => TakeDamageRequestC.Value;

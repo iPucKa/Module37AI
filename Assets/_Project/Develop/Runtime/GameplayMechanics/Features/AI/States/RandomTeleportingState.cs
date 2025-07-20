@@ -29,10 +29,6 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI.States
 		{
 			base.Enter();
 
-			//GenerateTeleportPosition();
-
-			//_teleportRequest.Invoke();
-
 			_time = 0;
 		}		
 
