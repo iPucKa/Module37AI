@@ -112,6 +112,7 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore
 
 			entity
 				.AddTeleportRadius(new ReactiveVariable<float>(config.TeleportRadius))
+				.AddTeleportPosition(new ReactiveVariable<Vector3>())
 				.AddTeleportCooldownInitialTime(new ReactiveVariable<float>(config.TeleportCooldown))
 				.AddTeleportCooldownCurrentTime()
 				.AddInTeleportCooldown()
@@ -183,6 +184,109 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore
 				.AddSystem(new TeleportCooldownTimerSystem())
 				.AddSystem(new SpendEnergyOnTeleportSystem())
 				.AddSystem(new RestoreEnergySystem())				
+				.AddSystem(new BodyContactsDetectingSystem())
+				.AddSystem(new BodyContactsEntitiesFilterSystem(_collidersRegistryService))
+				.AddSystem(new AreaContactsDetectingSystem())
+				.AddSystem(new AreaContactsEntitiesFilterSystem(_collidersRegistryService))
+				.AddSystem(new ApplyDamageSystem())
+				.AddSystem(new AttackAfterTeleportSystem())
+				.AddSystem(new StartAttackSystem())
+				.AddSystem(new AttackProcessTimerSystem())
+				.AddSystem(new AttackDelayEndTriggerSystem())
+				.AddSystem(new EndAttackSystem())
+				.AddSystem(new AreaAttackSystem())
+				.AddSystem(new DeathSystem())
+				.AddSystem(new DisableCollidersOnDeathSystem())
+				.AddSystem(new DeathProcessTimerSystem())
+				.AddSystem(new SelfReleaseSystem(_entitiesLifeContext));
+
+			_entitiesLifeContext.Add(entity);
+
+			return entity;
+		}
+
+		public Entity CreateNewHero(Vector3 position)
+		{
+			Entity entity = CreateEmpty();
+
+			TeleportedEntityConfig config = _configProviderService.GetConfig<TeleportedEntityConfig>();
+
+			_monoEntitiesFactory.Create(entity, position, "Entities/TeleportedEntity");
+
+			entity
+				.AddTeleportRadius(new ReactiveVariable<float>(config.TeleportRadius))
+				.AddTeleportPosition(new ReactiveVariable<Vector3>())
+				.AddTeleportCooldownInitialTime(new ReactiveVariable<float>(config.TeleportCooldown))
+				.AddTeleportCooldownCurrentTime()
+				.AddInTeleportCooldown()
+				.AddTeleportingRequest()
+				.AddTeleportingEvent()
+				.AddMaxHealth(new ReactiveVariable<float>(config.MaxHealth))
+				.AddCurrentHealth(new ReactiveVariable<float>(config.MaxHealth))
+				.AddMaxEnergy(new ReactiveVariable<float>(config.MaxEnergy))
+				.AddCurrentEnergy(new ReactiveVariable<float>(config.MaxEnergy))
+				.AddTeleportByEnergyValue(new ReactiveVariable<float>(config.EnergyValueForTeleport))
+				.AddEnergyRecoveryInitialTime(new ReactiveVariable<float>(config.EnergyRecoveryTime))
+				.AddEnergyRecoveryCurrentTime()
+				.AddTakeDamageRequest()
+				.AddTakeDamageEvent()
+				.AddIsDead()
+				.AddInDeathProcess()
+				.AddDeathProcessInitialTime(new ReactiveVariable<float>(config.DeathProcessInitialTime))
+				.AddDeathProcessCurrentTime()
+				.AddAreaContactDamage(new ReactiveVariable<float>(config.Damage))
+				.AddAreaContactRadius(new ReactiveVariable<float>(config.DamageRadius))
+				.AddContactsDetectingMask(1 << LayerMask.NameToLayer("Characters"))
+				.AddAreaContactCollidersBuffer(new Buffer<Collider>(64))
+				.AddContactCollidersBuffer(new Buffer<Collider>(64))
+				.AddContactEntitiesBuffer(new Buffer<Entity>(64))
+				.AddAreaContactEntitiesBuffer(new Buffer<Entity>(64))
+				.AddAttackProcessInitialTime(new ReactiveVariable<float>(1))
+				.AddAttackProcessCurrentTime()
+				.AddInAttackProcess()
+				.AddStartAttackRequest()
+				.AddStartAttackEvent()
+				.AddEndAttackEvent()
+				.AddAttackDelayTime(new ReactiveVariable<float>(config.AttackDelayTime))
+				.AddAttackDelayEndEvent()
+				.AddCurrentTarget();
+
+			ICompositCondition canTeleport = new CompositCondition()
+				.Add(new FuncCondition(() => entity.IsDead.Value == false))
+				.Add(new FuncCondition(() => entity.InTeleportCooldown.Value == false))
+				.Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.TeleportByEnergyValue.Value));
+
+			ICompositCondition canRestoreEnergy = new CompositCondition()
+				.Add(new FuncCondition(() => entity.IsDead.Value == false))
+				.Add(new FuncCondition(() => entity.CurrentEnergy.Value < entity.MaxEnergy.Value));
+
+			ICompositCondition mustDie = new CompositCondition()
+				.Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
+
+			ICompositCondition mustSelfRelease = new CompositCondition()
+				.Add(new FuncCondition(() => entity.IsDead.Value))
+				.Add(new FuncCondition(() => entity.InDeathProcess.Value == false));
+
+			ICompositCondition canApplyDamage = new CompositCondition()
+				.Add(new FuncCondition(() => entity.IsDead.Value == false));
+
+			ICompositCondition canStartAttack = new CompositCondition()
+				.Add(new FuncCondition(() => entity.IsDead.Value == false))
+				.Add(new FuncCondition(() => entity.InAttackProcess.Value == false));
+
+			entity
+				.AddCanTeleport(canTeleport)
+				.AddCanRestoreEnergy(canRestoreEnergy)
+				.AddMustDie(mustDie)
+				.AddMustSelfRelease(mustSelfRelease)
+				.AddCanStartAttack(canStartAttack)
+				.AddCanApplyDamage(canApplyDamage);
+
+			entity
+				.AddSystem(new RigidbodyTeleportingSystem())
+				.AddSystem(new TeleportCooldownTimerSystem())
+				.AddSystem(new SpendEnergyOnTeleportSystem())
+				.AddSystem(new RestoreEnergySystem())
 				.AddSystem(new BodyContactsDetectingSystem())
 				.AddSystem(new BodyContactsEntitiesFilterSystem(_collidersRegistryService))
 				.AddSystem(new AreaContactsDetectingSystem())

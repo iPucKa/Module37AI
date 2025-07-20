@@ -1,5 +1,7 @@
 ﻿using Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore;
 using Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore.Mono;
+using Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI;
+using Assets._Project.Develop.Runtime.GameplayMechanics.Features.InputFeature;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagement;
 using UnityEngine;
@@ -16,9 +18,30 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Infrastructure
 			container.RegisterAsSingle(CreateEntitiesLifeContext);
 			container.RegisterAsSingle(CreateMonoEntitiesFactory).NonLazy();
 			container.RegisterAsSingle(CreateCollidersRegistryService);
+			container.RegisterAsSingle(CreateBrainsFactory);
+			container.RegisterAsSingle(CreateAIBrainsContext);
+			container.RegisterAsSingle<IInputService>(CreateDesktopInput);
 		}
 
-		//Способ регистрации связи сущности и коллайдера
+		//Способ создания сервиса воода с клавиатуры
+		private static DesktopInput CreateDesktopInput(DIContainer c)
+		{
+			return new DesktopInput();
+		}
+
+		//Способ создания Сервиса жизненного цикла мозгов
+		private static AIBrainsContext CreateAIBrainsContext(DIContainer c)
+		{
+			return new AIBrainsContext();
+		}
+
+		//Способ создания Фабрики мозгов
+		private static BrainsFactory CreateBrainsFactory(DIContainer c)
+		{
+			return new BrainsFactory(c);
+		}
+
+		//Способ создания связи сущности и коллайдера
 		private static CollidersRegistryService CreateCollidersRegistryService(DIContainer c)
 		{
 			return new CollidersRegistryService();

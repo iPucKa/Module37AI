@@ -1,4 +1,6 @@
 ﻿using Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore;
+using Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI;
+using Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI.States;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using UnityEngine;
 
@@ -8,8 +10,10 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics
 	{
 		private DIContainer _container;
 		private EntitiesFactory _entitiesFactory;
+		private BrainsFactory _brainsFactory;
 
-		private Entity _entityHero;
+		private Entity _entityNewHero;
+		private Entity _ghost;
 
 		private bool _isRunning;
 
@@ -17,16 +21,16 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics
 		{
 			_container = container;
 			_entitiesFactory = _container.Resolve<EntitiesFactory>();
+			_brainsFactory = _container.Resolve<BrainsFactory>();
 		}
 
 		public void Run()
 		{
-			Entity entityGhost1 = _entitiesFactory.CreateGhost(Vector3.zero + Vector3.forward * 3);
-			Entity entityGhost2 = _entitiesFactory.CreateGhost(Vector3.zero - Vector3.forward * 3);
-			Entity entityGhost3 = _entitiesFactory.CreateGhost(Vector3.zero + Vector3.right * 3);
-			//_entityCC = _entitiesFactory.CreateHeroCCEntity(new Vector3(0,0,3));
+			_ghost = _entitiesFactory.CreateGhost(Vector3.zero + Vector3.forward * 3);
+			//_brainsFactory.CreateGhostBrain(_ghost);
 
-			_entityHero = _entitiesFactory.CreateHero(Vector3.zero);
+			_entityNewHero = _entitiesFactory.CreateNewHero(Vector3.zero);
+			//добавить мозг Герою
 
 			_isRunning = true;
 		}
@@ -36,11 +40,22 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics
 			if (_isRunning == false)
 				return;
 
-			if (Input.GetKeyDown(KeyCode.Space))			
-				_entityHero.TeleportingRequest.Invoke();			
+			if (Input.GetKeyDown(KeyCode.I))
+			{
+				Debug.Log("РЕЖИМ СВОБОДНОЙ ТЕЛЕПОРТАЦИИ");
 
-			if(Input.GetKeyDown(KeyCode.F))
-				_entityHero.TakeDamageRequest.Invoke(50);
+				_brainsFactory.CreateMainHeroRandomTeleportingBrain(_entityNewHero);
+			}
+
+			if (Input.GetKeyDown(KeyCode.Space))
+			{
+				Debug.Log("РЕЖИМ ТЕЛЕПОРТАЦИИ К ЦЕЛИ");
+
+				_brainsFactory.CreateMainHeroToTargetTeleportingBrain(_entityNewHero, new MinHealthDamageableTargetSelector(_entityNewHero));
+			}
+
+			//if(Input.GetKeyDown(KeyCode.F))
+			//	_entityNewHero.TakeDamageRequest.Invoke(50);
 		}
 	}
 }

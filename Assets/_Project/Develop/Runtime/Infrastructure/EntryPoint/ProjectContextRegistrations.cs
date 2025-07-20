@@ -15,6 +15,7 @@ using Assets._Project.Develop.Runtime.Utilities.DataManagement.Serializers;
 using Assets._Project.Develop.Runtime.Utilities.LoadingScreen;
 using Assets._Project.Develop.Runtime.Utilities.Reactive;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagement;
+using Assets._Project.Develop.Runtime.Utilities.Timer;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,7 +41,12 @@ namespace Assets._Project.Develop.Runtime.Infrastructure.EntryPoint
 			container.RegisterAsSingle(CreateProgressRestoreService);
 			container.RegisterAsSingle(CreateViewsFactory);
 			container.RegisterAsSingle(CreateProjectPresentersFactory);
+			container.RegisterAsSingle(CreateTimerServiceFactory);
 		}
+
+		//Способ создания сервиса таймеров
+		private static TimerServiceFactory CreateTimerServiceFactory(DIContainer c)
+			=> new TimerServiceFactory(c);
 
 		//Способ создания фабрики презентеров
 		private static ProjectPresentersFactory CreateProjectPresentersFactory(DIContainer c)

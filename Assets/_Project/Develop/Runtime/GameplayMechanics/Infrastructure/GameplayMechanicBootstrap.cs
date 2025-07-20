@@ -1,4 +1,5 @@
 ﻿using Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore;
+using Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI;
 using Assets._Project.Develop.Runtime.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagement;
@@ -14,6 +15,7 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Infrastructure
 		[SerializeField] private TestGameplay _testGameplay;
 
 		private EntitiesLifeContext _entitiesLifeContext;
+		private AIBrainsContext _brainsContext;
 
 		public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
 		{
@@ -27,6 +29,7 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Infrastructure
 			Debug.Log("Инициализация сцены геймплейных механик");
 
 			_entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
+			_brainsContext = _container.Resolve<AIBrainsContext>();
 
 			_testGameplay.Initialize(_container);
 
@@ -41,6 +44,7 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Infrastructure
 
 		private void Update()
 		{
+			_brainsContext?.Update(Time.deltaTime);
 			_entitiesLifeContext?.Update(Time.deltaTime);			
 		}
 	}
