@@ -68,11 +68,6 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics
 
 				_brainsFactory.CreateSimpleHeroBrain(_entityHero, _camera);
 			}
-
-			if (Input.GetMouseButtonDown(0))
-			{
-				_entityHero.IsAttackKeyPressed.Value = true;
-			}
 		}
 	}
 }

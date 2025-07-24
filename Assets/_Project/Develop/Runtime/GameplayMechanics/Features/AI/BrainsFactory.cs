@@ -182,9 +182,11 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI
 
 		private AIStateMachine CreatePlayerAttackStateMachine(Entity entity, Camera camera)
 		{
-			MouseRotationState mouseRotationState = new MouseRotationState(entity, camera);
+			MouseInput mouseInput = new MouseInput(camera);
 
-			AttackByKeyState attackTriggerState = new AttackByKeyState(entity);
+			MouseRotationState mouseRotationState = new MouseRotationState(entity, mouseInput);
+
+			AttackByKeyState attackByKeyState = new AttackByKeyState(entity);
 
 			ReactiveVariable<bool> inAttackProcess = entity.InAttackProcess;
 
@@ -198,11 +200,11 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI
 
 			AIStateMachine stateMachine = new AIStateMachine();
 
-			stateMachine.AddState(attackTriggerState);
+			stateMachine.AddState(attackByKeyState);
 			stateMachine.AddState(mouseRotationState);
 
-			stateMachine.AddTransition(attackTriggerState, mouseRotationState, fromAttackToMouseRotationStateCondition);
-			stateMachine.AddTransition(mouseRotationState, attackTriggerState, fromMouseRotationToAttackStateCondition);	
+			stateMachine.AddTransition(attackByKeyState, mouseRotationState, fromAttackToMouseRotationStateCondition);
+			stateMachine.AddTransition(mouseRotationState, attackByKeyState, fromMouseRotationToAttackStateCondition);	
 
 			return stateMachine;
 		}		

@@ -1,16 +1,12 @@
 ﻿using Assets._Project.Develop.Runtime.GameplayMechanics.EntitiesCore;
 using Assets._Project.Develop.Runtime.Utilities.Reactive;
 using Assets._Project.Develop.Runtime.Utilities.StateMachineCore;
-using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI.States
 {
 	public class AttackByKeyState : State, IUpdatableState
 	{
-		private const int LeftMouseButton = 0;
-
 		private ReactiveEvent _attackRequest;
-
 		private ReactiveVariable<bool> _isAttackKeyPressed;
 
 		public AttackByKeyState(Entity entity)
@@ -22,7 +18,7 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI.States
 		public void Update(float deltaTime)
 		{
 			if (_isAttackKeyPressed.Value == false)
-				_isAttackKeyPressed.Value = Input.GetMouseButtonDown(LeftMouseButton);
+				return;
 
 			if (_isAttackKeyPressed.Value)
 			{

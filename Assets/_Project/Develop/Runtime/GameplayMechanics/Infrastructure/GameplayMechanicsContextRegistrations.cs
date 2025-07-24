@@ -23,11 +23,11 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Infrastructure
 			container.RegisterAsSingle<IInputService>(CreateDesktopInput);
 		}
 
-		//Способ создания сервиса воода с клавиатуры
+		//Способ создания сервиса ввода с клавиатуры
 		private static DesktopInput CreateDesktopInput(DIContainer c)
 		{
 			return new DesktopInput();
-		}
+		}		
 
 		//Способ создания Сервиса жизненного цикла мозгов
 		private static AIBrainsContext CreateAIBrainsContext(DIContainer c)

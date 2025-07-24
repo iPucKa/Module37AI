@@ -7,5 +7,7 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.InputFeatur
 		bool IsEnabled { get; set; }
 
 		Vector3 Direction { get; }
+
+		bool IsAttackButtonPressed { get; }
 	}
 }

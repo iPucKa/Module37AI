@@ -19,5 +19,7 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.InputFeatur
 				return new Vector3(Input.GetAxisRaw(HorizontalAxisName), 0, Input.GetAxisRaw(VerticalAxisName));
 			}
 		}
+	
+		public bool IsAttackButtonPressed => Input.GetKeyDown(KeyCode.V);		
 	}
 }
