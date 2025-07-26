@@ -25,7 +25,7 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI.States
 
 		public void Update(float deltaTime)
 		{
-			_rotationDirection.Value = (_inputService.Direction - _transform.position).normalized;
+			_rotationDirection.Value = (_inputService.PointerPosition - _transform.position).normalized;
 
 			if (_isAttackKeyPressed.Value == false)
 				_isAttackKeyPressed.Value = _inputService.IsAttackButtonPressed;

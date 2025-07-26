@@ -182,9 +182,7 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI
 
 		private AIStateMachine CreatePlayerAttackStateMachine(Entity entity, Camera camera)
 		{
-			MouseInput mouseInput = new MouseInput(camera);
-
-			MouseRotationState mouseRotationState = new MouseRotationState(entity, mouseInput);
+			MouseRotationState mouseRotationState = new MouseRotationState(entity, _inputService);
 
 			AttackByKeyState attackByKeyState = new AttackByKeyState(entity);
 

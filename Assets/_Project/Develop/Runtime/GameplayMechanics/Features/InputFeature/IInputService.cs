@@ -8,6 +8,8 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.InputFeatur
 
 		Vector3 Direction { get; }
 
+		Vector3 PointerPosition { get; }
+
 		bool IsAttackButtonPressed { get; }
 	}
 }

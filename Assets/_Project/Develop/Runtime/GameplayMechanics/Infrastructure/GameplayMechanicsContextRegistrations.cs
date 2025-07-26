@@ -10,9 +10,13 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Infrastructure
 {
 	public class GameplayMechanicsContextRegistrations
 	{
-		public static void Process(DIContainer container)
+		private static Camera _camera;
+
+		public static void Process(DIContainer container, Camera camera)
 		{
 			Debug.Log("Процесс регистрации сервисов на сцене геймплейных механик");
+
+			_camera = camera;
 
 			container.RegisterAsSingle(CreateEntitiesFactory);
 			container.RegisterAsSingle(CreateEntitiesLifeContext);
@@ -26,7 +30,7 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Infrastructure
 		//Способ создания сервиса ввода с клавиатуры
 		private static DesktopInput CreateDesktopInput(DIContainer c)
 		{
-			return new DesktopInput();
+			return new DesktopInput(_camera);
 		}		
 
 		//Способ создания Сервиса жизненного цикла мозгов

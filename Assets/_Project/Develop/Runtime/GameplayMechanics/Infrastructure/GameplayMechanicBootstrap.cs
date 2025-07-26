@@ -19,9 +19,10 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Infrastructure
 
 		public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
 		{
-			_container = container;			
+			_container = container;	
+			Camera camera = Camera.main;
 
-			GameplayMechanicsContextRegistrations.Process(_container);
+			GameplayMechanicsContextRegistrations.Process(_container, camera);
 		}
 
 		public override IEnumerator Initialize()
