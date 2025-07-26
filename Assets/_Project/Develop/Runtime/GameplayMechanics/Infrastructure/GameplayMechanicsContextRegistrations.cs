@@ -25,12 +25,20 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Infrastructure
 			container.RegisterAsSingle(CreateBrainsFactory);
 			container.RegisterAsSingle(CreateAIBrainsContext);
 			container.RegisterAsSingle<IInputService>(CreateDesktopInput);
+			container.RegisterAsSingle(CreateMouseTracktService);
+		}
+
+		private static MouseTrackService CreateMouseTracktService(DIContainer c)
+		{
+			return new MouseTrackService(
+				_camera, 
+				c.Resolve<IInputService>());
 		}
 
 		//Способ создания сервиса ввода с клавиатуры
 		private static DesktopInput CreateDesktopInput(DIContainer c)
 		{
-			return new DesktopInput(_camera);
+			return new DesktopInput();
 		}		
 
 		//Способ создания Сервиса жизненного цикла мозгов

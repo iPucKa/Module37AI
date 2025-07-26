@@ -11,21 +11,25 @@ namespace Assets._Project.Develop.Runtime.GameplayMechanics.Features.AI.States
 		private Transform _transform;
 		private ReactiveVariable<Vector3> _rotationDirection;
 		private ReactiveVariable<bool> _isAttackKeyPressed;
+		
 		private IInputService _inputService;
+		private MouseTrackService _mouseTrackService;
 
 		public MouseRotationState(
-			Entity entity,			
-			IInputService inputService)
+			Entity entity,
+			IInputService inputService,
+			MouseTrackService mouseTrackService)
 		{
 			_transform = entity.Transform;
 			_rotationDirection = entity.RotationDirection;
 			_isAttackKeyPressed = entity.IsAttackKeyPressed;
 			_inputService = inputService;
-		}		
+			_mouseTrackService = mouseTrackService;
+		}
 
 		public void Update(float deltaTime)
 		{
-			_rotationDirection.Value = (_inputService.PointerPosition - _transform.position).normalized;
+			_rotationDirection.Value = (_mouseTrackService.Position - _transform.position).normalized;
 
 			if (_isAttackKeyPressed.Value == false)
 				_isAttackKeyPressed.Value = _inputService.IsAttackButtonPressed;
